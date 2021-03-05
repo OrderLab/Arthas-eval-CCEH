@@ -1,0 +1,3 @@
+#!/bin/bash
+gcc -o set_million set_million.c
+./set_million
