@@ -5,10 +5,6 @@ all: ALL_CCEH Cuckoo LinearProbing Extendible Level Path
 
 ALL_CCEH: CCEH_MSB CCEH_LSB
 
-test: src/test.cpp CCEH_MSB
-	$(CXX) $(CFLAGS) -o bin/single_threaded_cceh src/test.cpp src/CCEH_MSB.o
-	$(CXX) $(CFLAGS) -o bin/multi_threaded_cceh src/test.cpp src/CCEH_MSB.o -lpthread -DMULTITHREAD
-
 CCEH_MSB: src/CCEH.h src/CCEH_MSB.cpp
 	$(CXX) $(CFLAGS) -c -o src/CCEH_MSB.o src/CCEH_MSB.cpp -DINPLACE
 	$(CXX) $(CFLAGS) -c -o src/CCEH_MSB_CoW.o src/CCEH_MSB.cpp
@@ -33,4 +29,4 @@ Path: src/path_hashing.cpp src/path_hashing.hpp
 	$(CXX) $(CFLAGS) -c src/path_hashing.cpp -o src/path_hashing.o
 
 clean:
-	rm -rf src/*.o bin/*
+	rm -rf src/*.o

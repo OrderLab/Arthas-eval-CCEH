@@ -1,0 +1,31 @@
+ifndef PMDK_HOME
+LIBPMEM_CFLAGS = $(shell pkg-config --cflags libpmem) -g -O0
+LIBPMEM_LDFLAGS = $(shell pkg-config --libs libpmem) -g -O0
+LIBPMEMOBJ_CFLAGS = $(shell pkg-config --cflags libpmemobj) -g -O0
+LIBPMEMOBJ_LDFLAGS = $(shell pkg-config --libs libpmemobj) -g -O0
+else
+LIBPMEM_CFLAGS = -DUSE_PMEM -I $(PMDK_HOME)/src/include -g -O0
+LIBPMEM_LDFLAGS = -Wl,-rpath=$(PMDK_HOME)/src/nondebug/ -lpmem -lmemkind -g -O0
+LIBPMEMOBJ_CFLAGS = -DUSE_PMEM -I $(PMDK_HOME)/src/include -g -O0
+LIBPMEMOBJ_LDFLAGS = -Wl,-rpath=$(PMDK_HOME)/src/nondebug -lpmemobj -lmemkind -g -O0
+endif
+
+.PHONY: all clean
+
+CXX := wllvm++
+CFLAGS := -std=c++11 -I./ -lrt -O0
+
+all: test
+
+test: src/test.cpp CCEH
+	$(CXX) $(CFLAGS) -o bin/cceh src/test.cpp src/CCEH.o $(LIBPMEMOBJ_CFLAGS) $(LIBPMEM_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -DINSERT -DSEARCH
+	$(CXX) $(CFLAGS) -o bin/cceh_search src/test.cpp src/CCEH.o $(LIBPMEMOBJ_CFLAGS) $(LIBPMEM_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -DSEARCH
+	$(CXX) $(CFLAGS) -o bin/ccehCoW src/test.cpp src/CCEH_CoW.o $(LIBPMEMOBJ_CFLAGS) $(LIBPMEM_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -DINSERT -DSEARCH
+	$(CXX) $(CFLAGS) -o bin/ccehCoW_search src/test.cpp src/CCEH_CoW.o $(LIBPMEMOBJ_CFLAGS) $(LIBPMEM_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -DSEARCH
+
+CCEH: src/CCEH.h src/CCEH.cpp
+	$(CXX) $(CFLAGS) -c -o src/CCEH.o src/CCEH.cpp -DINPLACE $(LIBPMEMOBJ_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -g
+	$(CXX) $(CFLAGS) -c -o src/CCEH_CoW.o src/CCEH.cpp $(LIBPMEMOBJ_CFLAGS) $(LIBPMEMOBJ_LDFLAGS) $(LIBPMEM_LDFLAGS) -g
+	
+clean:
+	rm -rf src/*.o bin/* 

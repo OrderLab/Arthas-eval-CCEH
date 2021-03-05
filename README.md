@@ -23,7 +23,7 @@ For more details about CCEH, please refer to USENIX FAST 2019 paper -
 ```
 git clone https://github.com/DICL/CCEH
 cd CCEH
-make test 
+make ALL_CCEH
 ```
 
 ## Contirubtors
